@@ -32,9 +32,7 @@ func New(command string, args []string, wsURL, wsToken string, wsMode WSMode, re
 	}
 
 	cmd := exec.Command(command, args...)
-	if relayID != "" {
-		cmd.Env = append(os.Environ(), "REMUX_ID="+relayID)
-	}
+	cmd.Env = append(os.Environ(), "REMUX_ID="+relayID)
 
 	r := &Relay{
 		cmd:    cmd,

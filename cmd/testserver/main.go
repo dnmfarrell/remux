@@ -7,7 +7,7 @@
 // Usage:
 //   go run ./cmd/testserver
 //   # In another terminal:
-//   TETHER_WS_URL=ws://localhost:8080/ws ./remux
+//   REMUX_WS_URL=ws://localhost:8080/ws ./remux
 
 package main
 
