@@ -37,29 +37,15 @@ Requires Go 1.22+. Works on macOS and Linux.
 
 ## Usage
 
-### Basic (keyboard only)
-
-```bash
-# Launch your default shell ($SHELL) via remux
-./remux
-
-# Launch a specific command
-./remux -- bash
-
-# Launch claude
-./remux -- claude
-```
-
-If no command is given after `--`, remux runs `$SHELL` (falling back to `/bin/sh`).
-
 ### With remote WebSocket
 
 ```bash
 export REMUX_WS_URL=wss://example.com/ws/relay?device=abc123
 export REMUX_WS_TOKEN=my-secret-token
 
-./remux -- claude
+./remux -- bash
 ```
+If no command is given after `--`, remux runs `$SHELL` (falling back to `/bin/sh`).
 
 If `REMUX_WS_URL` is not set, remux runs without a remote channel.
 
@@ -70,6 +56,7 @@ If `REMUX_WS_URL` is not set, remux runs without a remote channel.
 | `REMUX_WS_URL` | No | WebSocket server URL (e.g. `wss://host/path?args`). Domain, path, and query parameters are all part of the URL. |
 | `REMUX_WS_TOKEN` | No | Auth token sent as `Authorization: Bearer <token>` header on connect. |
 | `REMUX_WS_MODE` | No | WebSocket directionality: `rw` (default) — read input from server and write output back; `r` — read input only, no output sent; `w` — write output only, input from server ignored. |
+| `REMUX_LOG` | No | Path to log file. Defaults to `/tmp/remux-<pid>.log`. All log output (connection status, errors, reconnections) is written here instead of stderr to avoid polluting the terminal. |
 
 ## WebSocket Protocol
 
@@ -85,7 +72,7 @@ Examples of what the server might send:
 
 ### Remux → server (PTY output)
 
-PTY output is streamed back as binary WebSocket messages. This is the raw byte stream from the child process, including ANSI escape codes, colors, cursor movement, etc. The server can ignore these messages if it only needs to send input.
+PTY output is streamed back as binary WebSocket messages. This is the raw byte stream from the child process, including ANSI escape codes, colors, cursor movement, etc. The server can ignore these messages if it only needs to send input, or use `REMUX_WS_MODE=r`.
 
 ## Reconnection
 

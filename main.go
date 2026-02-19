@@ -4,7 +4,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -24,6 +26,18 @@ func main() {
 				args = rest[1:]
 			}
 			break
+		}
+	}
+
+	// Log to file to avoid polluting the terminal
+	if logPath := os.Getenv("REMUX_LOG"); logPath != "" {
+		if f, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644); err == nil {
+			log.SetOutput(f)
+		}
+	} else {
+		logPath = filepath.Join(os.TempDir(), fmt.Sprintf("remux-%d.log", os.Getpid()))
+		if f, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644); err == nil {
+			log.SetOutput(f)
 		}
 	}
 
