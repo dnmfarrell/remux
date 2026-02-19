@@ -25,13 +25,16 @@ type Relay struct {
 // New creates a new Relay that will run the given command inside a PTY.
 // If wsURL is non-empty, a WebSocket client is created for remote I/O
 // according to wsMode (rw, r, or w).
-func New(command string, args []string, wsURL, wsToken string, wsMode WSMode) (*Relay, error) {
+func New(command string, args []string, wsURL, wsToken string, wsMode WSMode, relayID string) (*Relay, error) {
 	master, slave, err := openPTY()
 	if err != nil {
 		return nil, fmt.Errorf("openPTY: %w", err)
 	}
 
 	cmd := exec.Command(command, args...)
+	if relayID != "" {
+		cmd.Env = append(os.Environ(), "REMUX_ID="+relayID)
+	}
 
 	r := &Relay{
 		cmd:    cmd,
