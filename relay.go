@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 )
@@ -32,7 +33,21 @@ func New(command string, args []string, wsURL, wsToken string, wsMode WSMode, re
 	}
 
 	cmd := exec.Command(command, args...)
-	cmd.Env = append(os.Environ(), "REMUX_ID="+relayID)
+
+	// Filter out REMUX_* vars so the child has no evidence of remux by default.
+	// REMUX_EXPORT_* vars get re-exported with the prefix stripped.
+	// Values support $REMUX_ID substitution for runtime-generated values.
+	env := os.Environ()
+	cmd.Env = make([]string, 0, len(env))
+	for _, e := range env {
+		if strings.HasPrefix(e, "REMUX_EXPORT_") {
+			entry := strings.TrimPrefix(e, "REMUX_EXPORT_")
+			entry = strings.ReplaceAll(entry, "$REMUX_ID", relayID)
+			cmd.Env = append(cmd.Env, entry)
+		} else if !strings.HasPrefix(e, "REMUX_") {
+			cmd.Env = append(cmd.Env, e)
+		}
+	}
 
 	r := &Relay{
 		cmd:    cmd,

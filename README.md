@@ -57,7 +57,8 @@ If `REMUX_WS_URL` is not set, remux runs without a remote channel.
 | `REMUX_WS_TOKEN` | No | Auth token sent as `Authorization: Bearer <token>` header on connect. |
 | `REMUX_WS_MODE` | No | WebSocket directionality: `rw` (default) — read input from server and write output back; `r` — read input only, no output sent; `w` — write output only, input from server ignored. |
 | `REMUX_LOG` | No | Path to log file. Defaults to `/tmp/remux-<pid>.log`. All log output (connection status, errors, reconnections) is written here instead of stderr to avoid polluting the terminal. |
-| `REMUX_ID` | Auto | A UUID v4 generated on startup and exported into the child process environment. Also appended to the WebSocket URL as `relay_id`. |
+| `REMUX_ID` | Auto | A UUID v4 generated on startup and appended to the WebSocket URL as `relay_id`. Not exported to the child process. |
+| `REMUX_EXPORT_*` | No | Variables matching this prefix are re-exported to the child process with the prefix stripped. All other `REMUX_*` vars are stripped from the child environment. Values support `$REMUX_ID` substitution for runtime-generated values. For example, `REMUX_EXPORT_DEVICE_ID=abc` exports `DEVICE_ID=abc`, and `REMUX_EXPORT_SESSION_ID='$REMUX_ID'` exports `SESSION_ID=<generated uuid>`. |
 
 ## WebSocket Protocol
 
